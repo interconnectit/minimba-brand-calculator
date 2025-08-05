@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>MW Calculator</title>
+	<!--[if IE]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="https://cdn.jsdelivr.net/npm/handsontable@7.0.2/dist/handsontable.full.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Heebo" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/handsontable@7.0.2/dist/handsontable.full.min.css" rel="stylesheet" media="screen">
+    <style>
+    input[type=checkbox] {
+        -webkit-appearance:button;
+        border: solid 1px #2196f3;
+        white-space: nowrap;
+        overflow:hidden;
+        width:30px;
+        height: 30px;
+        opacity: 1.0;
+        display: block;
+        border-radius: 8px;
+        margin: 1px auto 2px !important;
+        
+    }
+
+    .handsontable {
+        border-radius: 5px;
+        margin-bottom: 0px;
+    }
+    .handsontable thead th.ht__highlight {
+        background-color:#2196f3;
+        color: #fff;
+    }
+
+
+    .handsontable td, th {
+        border-color:  #b3cde0 !important;
+    }
+
+    .handsontable td {
+        font-size: .8em;
+    }
+
+    .handsontable th {
+        font-size: .9em;
+    }
+    * {
+        font-family:'Heebo', sans-serif
+    }
+    .ht_master tr td {
+        background-color: #FFF;
+        border-color: #b3cde0;
+    }
+
+    .handsontable th {
+        background-color: #C9D9F2;
+        color: #458fcc;
+    }
+    .htCheckboxRendererInput.noValue{opacity:1 !important}
+
+    input[type=checkbox]:not(:checked) {
+    /* styles */
+        border: single 2px #2196f3
+    }
+  
+    input[type=checkbox]:checked {
+        background-color:#2196f3;
+    }
+
+    input[type=checkbox]:hover {
+        box-shadow:0px 0px 5px #1300ff;
+    }
+    #example-wrapper {
+        background-color: #458fcc;
+        height: 410px;
+        width: 920px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction:column;
+        margin: 0 auto;
+        border-radius: 30px;
+    }
+    #example {
+
+    }
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+        }
+    .top-fields {
+        margin-bottom: 20px;
+        margin-right: 10px;
+        height: 30px;
+        text-align: center;
+        font-size: 1.2em;
+        border-radius: 15px;
+        border: none;
+        width: 100%;
+    }
+    .example {
+        margin-bottom: 0px;
+        padding-bottom: 0px;
+    }
+
+    .results-p {
+        display: inline-block;
+        font-size: 1.2em;
+        margin-bottom: 0;
+        color: #fff;
+        font-weight:bold;
+    }
+    .objective {
+        width: 400px;
+    }
+
+    .objective input {
+        font-size: .8em;
+    }
+    .header-div {
+        margin: 0 auto;
+        margin-left: 20px;
+        text-align: center;
+
+        margin-top: 5px;
+    }
+	
+	button {
+		background-color: gold;
+		font-size: 1.4em;
+		font-weight: bold;
+		border: 0;
+		padding-left: 15px;
+		padding-right: 15px;
+		font-family: 'Heebo', sans-serif;
+		color: rgb(67, 101, 143);
+		border-radius: 10px;
+		border: 3px solid rgba(255,255,255,.5);
+	
+	}
+	
+	button:hover {
+		border: 3px solid #fff;
+	}
+
+    #header-wrapper {
+        margin: 0 auto;
+        display: flex;
+        justify-content: left;
+        align-items: left;
+    }
+    #output-annualised {
+        border-radius:20px;
+        width: 95%;
+        margin: 0 auto;
+        margin-bottom: 10px;
+    }
+    #output-annualised-div {
+        background-color:gold;
+        border-radius:15px;
+        margin-bottom: 25px;
+    }
+
+    #output-annualised-div p {
+        color: rgb(67, 101, 143);
+    }
+    #bottom-div {
+        margin-right: 0px;
+        width: 100%;
+        text-align: right;
+        vertical-align: text-top;
+    }
+    #total-investment {
+        color:white;
+        margin-right: 25px;
+        font-weight: bold;
+    }
+
+
+    .non-annualised-div{
+    }
+    </style>
+</head>
+
+<body id="home">
+    <div id="example-wrapper">
+        <div id="header-wrapper">
+            <div class="header-div objective">
+                <p class="results-p">Enter Objective Here</p></br>
+                <input type="text" class="top-fields" id="location" placeholder="Overall Objective"/>
+            </div>
+            <div class="header-div non-annualised-div">
+                <p class="results-p">Non-Annualised Value</p></br>
+                <input type="text" name="currency-field" id="currency-field" class="top-fields"
+                pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency" 
+                placeholder="$1,000,000">
+            </div>
+            <div class="header-div" id="output-annualised-div">
+                <p class="results-p">Annualised Value</p></br>
+                <input type="text" name="currency-field" id="output-annualised" class="top-fields"
+                pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency" 
+                placeholder="Submit For Value" disabled>
+            </div>
+        </div>
+        <div id="example"></div>
+        <div id="bottom-div">
+            <div style="float: left; margin-left: 40px; margin-top: 5px">
+                <img width="40px" height="40px" src="logo_mw.png"/>
+            </div>
+			<div style="float: left; margin-left: 330px; margin-top: 5px;">
+				<button type="button" onclick="main()">Calculate</button>
+			</div>
+            <div id='total-investment'>
+                <p>Total Investment</p>
+            </div>
+        </div>
+    </div>
+    
+
+
+</body>
+
+<script>
+var hot;
+document.addEventListener("DOMContentLoaded", function() {
+
+var container = document.getElementById('example');
+hot = new Handsontable(container, {
+  data: [
+      ['','','','','','','','','','','','','','',''],
+      ['','','','','','','','','','','','','','',''],
+      ['','','','','','','','','','','','','','',''],
+      ['','','','','','','','','','','','','','',''],
+      ['','','','','','','','','','','','','','',''],
+      ['','','','','','','','','','','','','','',''],
+      ['','','','','','','','','','','','','','',''],
+      ['','','','','','','','','','','','','','',''],
+      ['','','','','','','','','','','','','','','']
+    ],
+  rowHeaders: false,
+  colHeaders: ['Agency', 'Tactic', 'Jan', 'Feb', 'Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Investment'],
+  columnSummary: [
+    {
+    sourceColumn: 14,
+    destinationRow: 8,
+    destinationColumn: 14,
+    forceNumeric: true,
+	autoRowSize: true,
+    type: 'sum'
+    }
+],
+  columns: [
+      {
+          type: 'dropdown',
+          source: ["B&H","Digital Realities","Limelight","DDF","Influencer Inc"]
+      },
+      {
+          type: 'dropdown',
+          source: []
+      },
+      {
+          data: 'Jan',
+          type: 'checkbox',
+          checkedTemplate: 1, 
+          uncheckedTemplate: 0,
+          className: "htCenter htMiddle"
+      },
+      {
+          data: 'Feb',
+          type: 'checkbox',
+          checkedTemplate: 1,
+          uncheckedTemplate: 0,
+          className: "htCenter htMiddle"
+      },
+      {
+          data: 'Mar',
+          type: 'checkbox',
+          checkedTemplate: 1,
+          uncheckedTemplate: 0,
+          className: "htCenter htMiddle"
+      },
+      {
+          data: 'Apr',
+          type: 'checkbox',
+          checkedTemplate: 1,
+          uncheckedTemplate: 0,
+          className: "htCenter htMiddle"
+      },
+      {
+          data: 'May',
+          type: 'checkbox',
+          checkedTemplate: 1,
+          uncheckedTemplate: 0,
+          className: "htCenter htMiddle"
+      },
+      {
+          data: 'Jun',
+          type: 'checkbox',
+          checkedTemplate: 1,
+          uncheckedTemplate: 0,
+          className: "htCenter htMiddle"
+      },
+      {
+          data: 'Jul',
+          type: 'checkbox',
+          checkedTemplate: 1,
+          uncheckedTemplate: 0,
+          className: "htCenter htMiddle"
+      },
+      {
+          data: 'Aug',
+          type: 'checkbox',
+          checkedTemplate: 1,
+          uncheckedTemplate: 0,
+          className: "htCenter htMiddle"
+      },
+      {
+          data: 'Sep',
+          type: 'checkbox',
+          checkedTemplate: 1,
+          uncheckedTemplate: 0,
+          className: "htCenter htMiddle"
+      },
+      {
+          data: 'Oct',
+          type: 'checkbox',
+          checkedTemplate: 1,
+          uncheckedTemplate: 0,
+          className: "htCenter htMiddle"
+      },
+      {
+          data: 'Nov',
+          type: 'checkbox',
+          checkedTemplate: 1,
+          uncheckedTemplate: 0,
+          className: "htCenter htMiddle"
+      },
+      {
+          data: 'Dec',
+          type: 'checkbox',
+          checkedTemplate: 1,
+          uncheckedTemplate: 0,
+          className: "htCenter htMiddle"
+      },
+       {data: 'Investment',
+        type: 'numeric',
+        numericFormat: {
+            pattern: '$0,0.00',
+            culture: 'en-US'
+        }
+    }
+  ],
+  colWidths: [130, 170, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 130],
+  licenseKey: 'non-commercial-and-evaluation',
+  filters: false,
+  dropdownMenu: false,
+  mergeCells: [
+   {row: 8, col: 0, rowspan: 1, colspan: 14}
+ ]
+});
+hot.setCellMeta(8,0, 'type', 'text');
+hot.setDataAtCell(8,0, "Total Investment");
+hot.setCellMeta(8,0, 'className','htRight');
+hot.setCellMeta(8,0,'readOnly',true);
+hot.addHook('beforeChange', function(changes, source) {
+    if (source === 'loadData' || source === 'internal' || changes.length > 1) {
+    	return;
+    }
+    var row = changes[0][0];
+    var prop = changes[0][1];
+    var value = changes[0][3];
+	if (prop == 0) {
+			switch(value){
+				case "B&H":
+					hot.setCellMeta(row,prop+1,'source',['TV Campaign','Radio Spot',
+														'DOOH Ads','Cinema Ads','15s Digital pre-roll','EDM', 'News ad service','Point purchase']);
+					break;
+				case "Digital Realities":
+					hot.setCellMeta(row,prop+1,'source',['Facebook Lead Gen 1 + 2','Facebook Collection Ad','Facebook Video','Facebook Newsfeed Ad',
+														'Instagram Ad','Google Adwords - Brand','Google Adwords - Generic','Display - Retargeting Website Ad',"Instagram Video Ad",'15s YouTube Pre-Roll Ad','Programmatic Display Advertising','Partnership with Digital Publisher','LinkedIn Sponsored Content']);
+					break;
+				case "Limelight":
+					hot.setCellMeta(row,prop+1,'source',['full editorial campaign','local launch event','national launch event','launch editorial','big national sports sponsorship','big national event sponsorship','local event sponsorship opportunity','advertorial feature',
+					'internal training events','thought leadership article','spokesperson','Crisis Management']);
+					break;
+				case "DDF":
+					hot.setCellMeta(row,prop+1,'source',['TV Campaign','DOOH Ads','Cinema Ads','Newspaper Print Ads','Facebook Video','News Media Digital Display','Wraparound - 1 Major Title','Facebook Newsfeed Ad','Instagram Ad']);
+					break;
+				case "Influencer Inc":
+					hot.setCellMeta(row,prop+1,'source',['nano influencer (<1000)','micro influencer (<10000)','mega influencer (>100k)','celebrity influencer','influence party']);
+					break;
+				default:
+			
+			}
+			hot.setDataAtCell(row,prop+1,"")
+
+    	//var owner = this.getDataAtRowProp(row, 'ownersByYear')[value];
+      
+      //this.setDataAtRowProp(row, 'owner', owner, 'internal');
+    }
+  });
+ });
+var x = [];
+var y = [];
+function checkData() {
+	x = hot.getData();
+	y = x.map(function(val){
+		return val.slice(2,-1);
+	});
+	console.log(y);
+};
+
+function generateSequence(arr) {
+	var z = []
+	var currentVal = 1;
+	var i;
+	
+	for (i = 0; i < arr.length; i++) {
+		if (i == 0 && arr[i] == 1) {
+			z[i] = 1;
+		} else if (arr[i] == null || arr[i] == 0) {
+			z[i] = null;
+		} else if (z[i-1] > 0) {
+			z[i] = z[i-1]+1;
+		} else {
+			z[i] = 1;
+		}
+	}
+	return z;
+};
+
+const formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2
+})
+
+
+function main () {
+	checkData();
+	var all_investments = hot.getDataAtCol(14);
+	var number_of_tactics = all_investments.filter(function(x){return x > 1}).length - 1
+	var i = 0;
+	var annualised_return = 0;
+	var new_annualised_return = 0;
+	var investment = hot.getDataAtCell(i,14);
+	var non_annual_value = parseFloat(document.getElementById("currency-field").value.replace(/\$|,/g, ''));
+	var total_investment = hot.getDataAtCell(8,14);
+	var tactics = 0;
+	console.log("Investment is :" + investment);
+	console.log("Non Annual Value :" + non_annual_value);
+	console.log("Total Investment :" + total_investment);
+	for (var i = 0; i < y.length; i++) {
+		var row_investment =  hot.getDataAtCell(i,14);
+		var agency_name = hot.getDataAtCell(i,0);
+		var tactic_name = hot.getDataAtCell(i,1);
+		//annualised_return = annualised_return + calculateRow(generateSequence(y[i]), investment, 
+		//total_investment, non_annual_value, number_of_tactics);
+		new_annualised_return = new_annualised_return + newCalculateRow(y[i],row_investment,
+		                                                             total_investment, non_annual_value, number_of_tactics, i,
+																	 agency_name, tactic_name);
+		console.log(new_annualised_return + " is the new_annualised_return");
+	}
+	new_annualised_return = new_annualised_return * (1 + (.05*(tactics-1)));
+	document.getElementById("output-annualised").value = formatter.format(new_annualised_return);
+}
+function newCalculateRow(arr,row_investment,total_investment,non_annualized_value, tactics, i, agency_name, tactic_name){
+	if (arr.filter(function(x){return x == 1}).length == 0) {
+		console.log("Blank row!");
+		return 0;
+	}
+	tactics = tactics + 1;
+	var share_of_spend = row_investment / total_investment;
+	var share_trim = share_of_spend.toString();
+	share_trim = share_trim.slice(0,(share_trim.indexOf("."))+3);
+	var share_of_spend = Number(share_trim);
+	var non_annualized_return = share_of_spend * non_annualized_value;	
+	var months_invested = countInArray(arr,1);
+	var monthly_return = non_annualized_return / months_invested;
+	var impact = getImpact(tactic_name);
+	var effect_duration = getDuration(tactic_name);
+	console.log(months_invested);
+
+	var total = 0;
+	for (var z = 0; z < arr.length; z++) {
+		if (arr[z] == 1) {
+			var remaining_months = 11 - z;
+			var first_month_impact = impact * monthly_return;
+			console.log("First month impact " + first_month_impact);
+			console.log("remaining months is: " + remaining_months);
+			console.log("Monthly return is: " + monthly_return);
+			console.log("Proportional return: " + (1 - impact)*monthly_return);
+			console.log("Effect duration: " + effect_duration);
+			console.log("Remaining Months: " + remaining_months);
+			// var follow_on_impact = (1 - impact)*monthly_return / 12 * remaining_months / 3; 
+			var follow_on_impact = (1 - impact)*monthly_return / effect_duration * Math.min(effect_duration,remaining_months) / 3;
+			console.log("Follow on impact " + follow_on_impact);
+			var multiple = getMultiple(arr, z); //REPLACE WITH get multiple function
+			var follow_on_final = follow_on_impact * multiple;
+			console.log("The multiple is: " + multiple);
+			console.log(first_month_impact + follow_on_final + "THIS IS THE FINAL CALC FOR ROW :" + z);
+			total = total + first_month_impact + follow_on_final;
+		}
+	}
+	return total;
+}
+
+function getMultiple(arr, z) {
+	var multiple = 0;
+	if(z == 0) {
+		if(arr[z+1] == 1) {
+			return 2;
+		}
+	}
+	if(arr[z] == 11) {
+		if(arr[z-1] == 1) {
+			return 2;
+		}
+	}
+	if(arr[z-1] == 1 && arr[z+1] == 1) {
+		return 3;
+	}
+	if(arr[z-1] == 1 || arr[z+1] == 1) {
+		return 2;
+	}
+	return 1;
+}
+
+function getDuration(tactic) {
+	var duration;
+	switch (tactic) {
+		case "TV Campaign":
+			duration = 12;
+			break;
+		case "Radio Spot":
+			duration = 4;
+			break;
+		case "DOOH Ads":
+			duration = 3;
+			break;
+		case "News ad service":
+			duration = 3;
+			break;
+		case "Point purchase":
+			duration = 2;
+			break;
+		case "Instagram Video Ad":
+			duration = 2;
+			break;
+		case "Partnership with Digital Publisher":
+			duration = 3;
+			break;
+		case "LinkedIn Sponsored Content":
+			duration = 3;
+			break;
+		case "Crisis Management":
+			duration = 12;
+			break;
+		case "Cinema Ads":
+			duration = 6;
+			break;
+		case "15s Digital pre-roll":
+			duration = 2;
+			break;
+		case "Facebook Lead Gen 1 + 2":
+			duration = 3;
+			break;
+		case "Facebook Collection Ad":
+			duration = 2;
+			break;
+		case "Facebook Video":
+			duration = 2;
+			break;
+		case "Facebook Newsfeed Ad":
+			duration = 2;
+			break;
+		case "Instagram Ad":
+			duration = 2;
+			break;
+		case "Google Adwords - Brand":
+			duration = 2;
+			break;
+		case "Google Adwords - Generic":
+			duration = 2;
+			break;
+		case "Display - Retargeting Website Ad":
+			duration = 6;
+			break;
+		case "15s YouTube Pre-Roll Ad":
+			duration = 2;
+			break;
+		case "EDM":
+			duration = 2;
+			break;
+		case "full editorial campaign":
+			duration = 8;
+			break;
+		case "local launch event":
+			duration = 2;
+			break;
+		case "national launch event":
+			duration = 3; // CHANGE BACK to 2
+			break;
+		case "launch editorial":
+			duration = 2;
+			break;
+		case "big national sports sponsorship":
+			duration = 12;
+			break;
+		case "big national event sponsorship":
+			duration = 12;
+			break;
+		case "local event sponsorship opportunity":
+			duration = 6;
+			break;
+		case "advertorial feature":
+			duration = 8;
+			break;
+		case "internal training events":
+			duration = 12;
+			break;
+		case "thought leadership article":
+			duration = 12;
+			break;
+		case "spokesperson":
+			duration = 12;
+			break;
+		case "Newspaper Print Ads":
+			duration = 3;
+			break;
+		case "News Media Digital Display":
+			duration = 3;
+			break;		
+		case "Wraparound - 1 Major Title":
+			duration = 2;
+			break;
+		case "nano influencer (<1000)":
+			duration = 3;
+			break;		
+		case "micro influencer (<10000)":
+			duration = 3;
+			break;
+		case "mega influencer (>100k)":
+			duration = 3;
+			break;
+		case "celebrity influencer":
+			duration = 3;
+			break;
+		case "influence party":		
+			duration = 3;
+			break;
+		case "Twitter, Facebook & Instragram Website Click Ads":
+			duration = 2;
+			break;
+		case "Programmatic Display Advertising":
+			duration = 3;
+			break;
+		case "Partnership with Digital Publisher":		
+			duration = 3;
+			break;
+		default:
+			duration = 0;
+			break;
+	}
+	return duration;
+} 
+function getImpact(tactic) {
+	var impact;
+	switch (tactic) {
+		case "TV Campaign":
+			impact = 50;
+			break;
+		case "Radio Spot":
+			impact = 60;
+			break;
+		case "DOOH Ads":
+			impact = 60;
+			break;
+		case "Cinema Ads":
+			impact = 40;
+			break;
+		case "News ad service":
+			impact = 70;
+			break;
+		case "Point purchase":
+			impact = 95;
+			break;
+		case "Instagram Video Ad":
+			impact = 60;
+			break;
+		case "Partnership with Display Publisher":
+			impact = 60;
+			break;
+		case "LinkedIn Sponsored Content":
+			impact = 60;
+			break;
+		case "Crisis Management":
+			impact = 0;
+			break;
+		case "15s Digital pre-roll":
+			impact = 55;
+			break;
+		case "Facebook Lead Gen 1 + 2":
+			impact = 50;
+			break;
+		case "Facebook Collection Ad":
+			impact = 60;
+			break;
+		case "Facebook Video":
+			impact = 60;
+			break;
+		case "Facebook Newsfeed Ad":
+			impact = 60;
+			break;
+		case "Instagram Ad":
+			impact = 60;
+			break;
+		case "Google Adwords - Brand":
+			impact = 75;
+			break;
+		case "Google Adwords - Generic":
+			impact = 65;
+			break;
+		case "Display - Retargeting Website Ad":
+			impact = 60;
+			break;
+		case "15s YouTube Pre-Roll Ad":
+			impact = 65;
+			break;
+		case "EDM":
+			impact = 80;
+			break;
+		case "full editorial campaign":
+			impact = 50;
+			break;
+		case "local launch event":
+			impact = 70;
+			break;
+		case "national launch event":
+			impact = 70;  //CHANGE BACK TO 90
+			break;
+		case "launch editorial":
+			impact = 70;
+			break;
+		case "big national sports sponsorship":
+			impact = 50;
+			break;
+		case "big national event sponsorship":
+			impact = 50;
+			break;
+		case "local event sponsorship opportunity":
+			impact = 50;
+			break;
+		case "advertorial feature":
+			impact = 50;
+			break;
+		case "internal training events":
+			impact = 30;
+			break;
+		case "thought leadership article":
+			impact = 30;
+			break;
+		case "spokesperson":
+			impact = 30;
+			break;
+		case "Newspaper Print Ads":
+			impact = 60;
+			break;
+		case "News Media Digital Display":
+			impact = 60;
+			break;
+		case "Wraparound - 1 Major Title":
+			impact = 65;
+			break;
+		case "nano influencer (<1000)":
+			impact = 80;
+			break;
+		case "micro influencer (<10000)":
+			impact = 75;
+			break;
+		case "mega influencer (>100k)":
+			impact = 70;
+			break;
+		case "celebrity influencer":
+			impact = 75;
+			break;
+		case "influence party":
+			impact = 70;
+			break;
+		case "Twitter, Facebook & Instragram Website Click Ads":
+			impact = 80;
+			break;
+		case "Programmatic Display Advertising":
+			impact = 70;
+			break;
+		case "Partnership with Display Publisher":		
+			impact = 60;
+			break;
+		default:
+			impact = 0;
+			break;
+	}
+	
+	return impact/100;
+} 
+function calc(theform) {
+    var num = theform.original.value, rounded = theform.rounded
+    var with2Decimals = num.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0]
+    rounded.value = with2Decimals
+}
+function calculateRow(arr, investment, total_investment, non_annualized_return,tactics) {
+	var i,j;
+	var n = [];
+	var ones = 0;
+	var twos = 0;
+	var threes = 0;
+	var months = arr.filter(function(x){return x != null}).length;
+	console.log("Months are: " + months);
+	var total = 0;
+	var return_limit = .50
+	if (tactics < 2){
+	var tactic_bonus = 0
+	} else {
+	var tactic_bonus = .05 * tactics
+	};
+	
+	if (arr.filter(function(x){return x == 1}).length == 0) {
+		return 0;
+	}	
+	for (i = 0; i < 12; i++) {
+		var z = 5;
+		if (i > 7) {
+			z = 12-i;
+		}
+		var rest_are_threes = false;
+		for (j = 0; j < z; j++) {
+			if (arr[i] == null) {
+				break;
+			} else if (j < 1) {
+				n.push(1); 
+			} else if (arr[i+j] == null || rest_are_threes){
+				rest_are_threes = true;
+				n.push(3)
+			} 
+			else if (arr[i+j] > arr[i+j-1]) {
+				n.push(2);
+			} else {
+				n.push(3);
+			}
+		}
+		console.log("N is: " + n);
+		ones = countInArray(n, 1);
+		twos = countInArray(n, 2);
+		threes = countInArray(n, 3);
+		var non_annualized_revenue = non_annualized_return * (investment/total_investment);
+		var non_ann_div_months = non_annualized_revenue / months;
+
+		var row_total = (non_ann_div_months * ones * .20) + (non_ann_div_months * twos * .20) + (non_ann_div_months * threes * .1)
+		console.log("Row Total is: " +row_total);
+		if (row_total > (investment * return_limit)) {
+			row_total = investment * return_limit;
+		}
+
+		total += row_total;
+		n = [];
+	}
+	console.log("Total is " + total);
+	return (total * (1-.2) * (1 + tactic_bonus));
+};
+
+function countInArray(array, what) {
+    var count = 0;
+    for (var i = 0; i < array.length; i++) {
+        if (array[i] === what) {
+            count++;
+        }
+    }
+    return count;
+}
+
+</script>
+
+
+
+<script>
+// Jquery Dependency
+
+$("input[data-type='currency']").on({
+    keyup: function() {
+      formatCurrency($(this));
+    },
+    blur: function() { 
+      formatCurrency($(this), "blur");
+    }
+});
+
+
+function formatNumber(n) {
+  // format number 1000000 to 1,234,567
+  return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+}
+
+
+function formatCurrency(input, blur) {
+  // appends $ to value, validates decimal side
+  // and puts cursor back in right position.
+  
+  // get input value
+  var input_val = input.val();
+  
+  // don't validate empty input
+  if (input_val === "") { return; }
+  
+  // original length
+  var original_len = input_val.length;
+
+  // initial caret position 
+  var caret_pos = input.prop("selectionStart");
+    
+  // check for decimal
+  if (input_val.indexOf(".") >= 0) {
+
+    // get position of first decimal
+    // this prevents multiple decimals from
+    // being entered
+    var decimal_pos = input_val.indexOf(".");
+
+    // split number by decimal point
+    var left_side = input_val.substring(0, decimal_pos);
+    var right_side = input_val.substring(decimal_pos);
+
+    // add commas to left side of number
+    left_side = formatNumber(left_side);
+
+    // validate right side
+    right_side = formatNumber(right_side);
+    
+    // On blur make sure 2 numbers after decimal
+    if (blur === "blur") {
+      right_side += "00";
+    }
+    
+    // Limit decimal to only 2 digits
+    right_side = right_side.substring(0, 2);
+
+    // join number by .
+    input_val = "$" + left_side + "." + right_side;
+
+  } else {
+    // no decimal entered
+    // add commas to number
+    // remove all non-digits
+    input_val = formatNumber(input_val);
+    input_val = "$" + input_val;
+    
+    // final formatting
+    if (blur === "blur") {
+      input_val += ".00";
+    }
+  }
+  
+  // send updated string to input
+  input.val(input_val);
+
+  // put caret back in the right position
+  var updated_len = input_val.length;
+  caret_pos = updated_len - original_len + caret_pos;
+  input[0].setSelectionRange(caret_pos, caret_pos);
+}
+
+$('#location').keypress(function() {
+  
+  var textLength = $(this).val().length;
+  
+  if(textLength < 20) {
+      $(this).css('font-size', '100%');
+  } else if (textLength < 40) {
+      $(this).css('font-size', '85%');
+  } else if (textLength > 40) {
+      $(this).css('font-size', '70%');
+  }
+  
+ //console.log(textLength);
+});
+
+</script>
+</html>
